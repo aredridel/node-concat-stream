@@ -41,8 +41,12 @@ ConcatStream.prototype.getBody = function () {
 
 ConcatStream.prototype.end = function(chunk) {
   if (chunk) this.write(chunk)
-  this.emit('end')
-  if (this.cb) this.cb(this.getBody())
+  if (this.cb) {
+      this.cb(this.getBody(), this.emit.bind(this, 'end'))
+      if (this.cb.length < 2) this.emit('end')
+  } else {
+    this.emit('end')
+  }
 }
 
 module.exports = function(cb) {
